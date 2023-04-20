@@ -1,0 +1,86 @@
+text_hodin = [
+    list("JEJSOUJEDNA"), 
+    list("DEVĚTPĚTDVĚ"),
+    list("SEDMDVANÁCT"),
+    list("DESETŘIŠEST"),
+    list("OSMJEDENÁCT"),
+    list("ČTYŘIADESET"),
+    list("DVACETŘICET"),
+    list("PATNÁCTNULA"),
+    list("MEČTYŘICETM"),
+    list("PADESÁTDPĚT")
+]
+
+def zjisti_aktivni_rozsahy(h, m):
+    aktivni_rozsahy = [] 
+    hodiny = [
+        (2, 4, 12), (0, 6, 12), (1, 8, 12), (3, 4, 7), (5, 0, 5), (1, 5, 8), (3, 7, 12), (2, 0, 4), (4, 0, 3), (1, 0, 5), (3, 0, 5), (4, 3, 12)
+    ]
+    minuty = [
+        (7, 7, 11), (9, 8, 12), (5, 6, 12), (7, 0, 7), (6, 0, 6), (6, 5, 12), (8, 2, 10), (9, 0, 7)
+    ]
+    
+    #slovo je
+    aktivni_rozsahy.append((0, 0, 2))
+
+    #aktivace rozsahu pro hodiny
+    aktivni_rozsahy.append(hodiny[h % 12])
+
+    #aktivace rozsahu pro minuty
+    if m < 5:
+        aktivni_rozsahy.append(minuty[0])
+    if m >= 5 and m <10:
+        aktivni_rozsahy.append(minuty[1])
+    if m >= 10 and m <15:
+        aktivni_rozsahy.append(minuty[2])
+    if m >= 15 and m <20:
+        aktivni_rozsahy.append(minuty[3])
+    if m >= 20 and m <25:
+        aktivni_rozsahy.append(minuty[4])
+    if m >= 25 and m <30:
+        aktivni_rozsahy.append(minuty[4])
+        aktivni_rozsahy.append(minuty[1])
+    if m >= 30 and m <35:
+        aktivni_rozsahy.append(minuty[5])
+    if m >= 35 and m <40:
+        aktivni_rozsahy.append(minuty[5])
+        aktivni_rozsahy.append(minuty[1])
+    if m >= 40 and m <45:
+        aktivni_rozsahy.append(minuty[6])
+    if m >= 45 and m <50:
+        aktivni_rozsahy.append(minuty[6])
+        aktivni_rozsahy.append(minuty[1])
+    if m >= 50 and m <55:
+        aktivni_rozsahy.append(minuty[7])
+    if m >= 55:
+        aktivni_rozsahy.append(minuty[7])
+        aktivni_rozsahy.append(minuty[1])
+    return aktivni_rozsahy
+
+def vypis_hodiny1(h, m):
+    aktivni_rozsahy = zjisti_aktivni_rozsahy(h, m)
+    for y, radek in enumerate(text_hodin):
+        for x, pismeno in enumerate(radek):
+            if any(x >= start and x < end for rad, start, end in aktivni_rozsahy if y == rad):
+                print(pismeno, end="")
+            else:
+                print(" ", end="")
+        print("")
+
+def vypis_hodiny2(h, m):
+    aktivni_rozsahy = zjisti_aktivni_rozsahy(h, m)
+    for y, radek in enumerate(text_hodin):
+        for x, pismeno in enumerate(radek):
+            if any(x >= start and x < end for rad, start, end in aktivni_rozsahy if y == rad):
+                print("\033[92m" + pismeno + "\033[0m", end="")
+            else:
+                print(pismeno, end="")
+        print("")
+
+import time
+while True:
+    aktualni_cas = time.localtime()
+    h, m = aktualni_cas.tm_hour % 12, aktualni_cas.tm_min - (aktualni_cas.tm_min % 5)
+    vypis_hodiny1(h, m)
+    vypis_hodiny2(h, m)
+    time.sleep(60 - aktualni_cas.tm_sec)
